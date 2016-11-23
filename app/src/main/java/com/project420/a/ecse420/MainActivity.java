@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -19,10 +20,13 @@ import java.net.URL;
 public class MainActivity extends AppCompatActivity {
     private Spinner spinner;
     private Button load;
+    private Button test;
     private ImageView before;
     private ImageView after;
+    private TextView display;
     private Image image;
-    private Bitmap bitmap;
+    private Bitmap bitmapBefore;
+    private Bitmap bitmapAfter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         before=(ImageView)findViewById(R.id.before);
         after=(ImageView)findViewById(R.id.result);
+        display=(TextView) findViewById(R.id.display_test);
 
 
         load= (Button)findViewById(R.id.load);
@@ -39,7 +44,20 @@ public class MainActivity extends AppCompatActivity {
                 loadAndSetImage();
             }
         });
-
+        test= (Button)findViewById(R.id.test);
+        test.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(bitmapBefore!=null && bitmapAfter!=null){
+                    if(Image.testEquality(bitmapAfter,bitmapBefore)){
+                        display.setText("SAME IMAGE!");
+                    }
+                    else{
+                        display.setText("DIFFERENT IMAGE!");
+                    }
+                }
+            }
+        });
         spinner=(Spinner)findViewById(R.id.dropdown);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -48,12 +66,15 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("not",image.pool().toString());
                     if(position==0){
                         after.setImageBitmap(image.pool());
+                        bitmapAfter=image.pool();
                     }
                     else if(position==1){
                         after.setImageBitmap(image.convolve());
+                        bitmapAfter=image.convolve();
                     }
                     else if(position==2){
                         after.setImageBitmap(image.rectify());
+                        bitmapAfter=image.rectify();
                     }
                 }
 
@@ -85,13 +106,15 @@ public class MainActivity extends AppCompatActivity {
                 catch (Exception e){
                     Log.d("Error loading", e.toString());
                 }
+                bitmapBefore =bmp;
+                image=new Image(bitmapBefore);
                 return null;
             }
             @Override
             protected void onPostExecute(Void params){
                 before.setImageBitmap(bmp);
-                bitmap=bmp;
-                image=new Image(bitmap);
+
+
             }
         }.execute();
 

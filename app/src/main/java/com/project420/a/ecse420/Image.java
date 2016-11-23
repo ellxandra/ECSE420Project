@@ -2,6 +2,7 @@ package com.project420.a.ecse420;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 
@@ -39,5 +40,26 @@ public class Image{
             return bm;
         }
         return null;
+    }
+    public static Boolean testEquality(Bitmap arr1, Bitmap arr2){
+        if(arr1.getWidth()!=arr2.getWidth() || arr1.getHeight()!=arr2.getHeight()){
+            return false;
+        }
+        double MSE;
+        int diff,sum=0;
+        for(int j=0; j<arr1.getHeight();j++){
+            for (int i=0; i<arr1.getWidth();i++){
+                diff=arr1.getPixel(i,j)-arr2.getPixel(i,j);
+                sum+=diff*diff;
+            }
+        }
+        MSE=Math.sqrt(sum)/(arr1.getWidth()*arr1.getHeight());
+
+        Log.d("MSE is",Double.toString(MSE));
+        if(MSE<0.001){
+            return true;
+        }
+        return false;
+
     }
 }
