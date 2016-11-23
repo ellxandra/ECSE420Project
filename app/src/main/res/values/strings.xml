@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">ECSE420Project</string>
+    <string-array name="options">
+        <item>Pool</item>
+        <item>Convolve</item>
+        <item>Rectify</item>
+    </string-array>
+    <string name="display_content">Load image</string>
+</resources>
