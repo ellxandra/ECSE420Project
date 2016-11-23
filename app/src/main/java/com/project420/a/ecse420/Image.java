@@ -17,7 +17,9 @@ public class Image{
         array=getBytes(bitmap);
     }
     public Bitmap pool(){
-        return getImage(array);
+        Bitmap bm=getImage(array).copy(Bitmap.Config.ARGB_8888,true);
+
+        return bm;
     }
     public Bitmap convolve(){
         return getImage(array);
@@ -56,7 +58,7 @@ public class Image{
         MSE=Math.sqrt(sum)/(arr1.getWidth()*arr1.getHeight());
 
         Log.d("MSE is",Double.toString(MSE));
-        if(MSE<0.001){
+        if(MSE<0.00001){
             return true;
         }
         return false;
