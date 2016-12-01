@@ -26,8 +26,8 @@ public class Image{
         int width=bm.getWidth();
         int height=bm.getHeight();
         int R,G,B, Rc,Rr,Rd, Gc,Gr,Gd,Bc,Br,Bd;
-        for (int i=0; i<height;i++){
-            for (int j=0 ; j<width;j++){
+        for (int i=0; i<height;i=i+2){
+            for (int j=0 ; j<width;j=j+2){
                 R=Color.red(bm.getPixel(j,i));
                 Rr=Color.red(bm.getPixel(j+1,i));
                 Rd=Color.red(bm.getPixel(j,i+1));
@@ -53,7 +53,7 @@ public class Image{
                 G=G>Gd?G:Gd;
                 G=G>Gc?G:Gc;
 
-                //copied.setPixel(j,i,Color.argb(255,0,0,0));
+                copied.setPixel(j/2,i/2,Color.argb(255,R,G,B));
             }
         }
         return copied;

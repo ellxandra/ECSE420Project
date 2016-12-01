@@ -72,49 +72,33 @@ public class MainActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
                 try {
-                  //  Method method = View.class.getMethod("setLayerType", int.class, Paint.class);
-                    //method.invoke(view, View.LAYER_TYPE_HARDWARE, null);
+                    Method method = View.class.getMethod("setLayerType", int.class, Paint.class);
+                    method.invoke(view, View.LAYER_TYPE_HARDWARE, null);
                 } catch (Exception e) {
                     Log.e("RD", "Hardware Acceleration not supported on API " + android.os.Build.VERSION.SDK_INT, e);
                 }
                 boolean isHWAccelerated = view.isHardwareAccelerated();
-                Log.d("isHardwareAccelerated: " , String.valueOf(isHWAccelerated));
+
                 if(image!=null) {
+                    Log.d("isHardwareAccelerated: " , String.valueOf(isHWAccelerated));
+                    long startTime = System.currentTimeMillis();
                     if (position == 0) {
-                        new AsyncTask<Void, Void, Void>() {
-                            Bitmap map = null;
 
-                            @Override
-                            protected Void doInBackground(Void... params) {
-                                try {
-                                    map = image.pool();
-                                } catch (Exception e) {
-                                    Log.d("Error loading", e.toString());
-                                }
-                                return null;
-                            }
-
-                            @Override
-                            protected void onPostExecute(Void params) {
-                                after.setImageBitmap(map);
-                                bitmapAfter = map;
-                                Log.d("Finished", " processing");
-
-
-                            }
-                        }.execute();
+                        after.setImageBitmap(image.pool());
+                        bitmapAfter=after.getDrawingCache();
+                        Log.d("Finished"," pool");
 
                     }
                     else if(position==1){
-                        after.setImageBitmap(image.convolve());
-                        bitmapAfter=image.convolve();
+                        after.setImageBitmap(image.rectify());
+                        bitmapAfter=after.getDrawingCache();
+                        Log.d("Finished"," convolve");
                     }
                     else if(position==2){
                         //ON GPU
-                        after.setImageBitmap(image.rectify());
-                        bitmapAfter=after.getDrawingCache();
+                        //after.setImageBitmap(image.rectify());
+                        //bitmapAfter=after.getDrawingCache();
                         Log.d("Finished"," rectify");
-                        /*
                         //ON CPU
                         new AsyncTask<Void, Void, Void>() {
                             Bitmap map=null;
@@ -136,10 +120,14 @@ public class MainActivity extends AppCompatActivity {
 
 
                             }
-                        }.execute();*/
+                        }.execute();
                     }
-                    }
+                    long endTime = System.currentTimeMillis();
+                    Log.d("Time in ms: " ,Long.toString(endTime - startTime));
                 }
+
+
+            }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
 
