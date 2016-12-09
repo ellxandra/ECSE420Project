@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(bitmapBefore!=null && bitmapAfter!=null) {
-                    testEquality();
+                    Image.testEquality(bitmapBefore,bitmapBefore,display,getApplicationContext());
                 }
             }
         });
@@ -74,13 +74,26 @@ public class MainActivity extends AppCompatActivity {
                             protected Void doInBackground(Void... params) {
                                 try{
                                     if (position==0){
-                                        map=pool(bitmapBefore);
+                                        if(Build.VERSION.SDK_INT >=11){
+                                            map=Image.poolAccelerated(bitmapBefore,getApplicationContext());
+                                        }else{
+                                            map=Image.pool(bitmapBefore);
+                                        }
+
                                     }
                                     if (position==1){
-                                        map=convolve(bitmapBefore);
+                                        if(Build.VERSION.SDK_INT >=11){
+                                            map=Image.convolveAccelerated(bitmapBefore,getApplicationContext());
+                                        }else{
+                                            map=Image.convolve(bitmapBefore);
+                                        }
                                     }
                                     if (position==2){
-                                        map=rectify(bitmapBefore);
+                                        if(Build.VERSION.SDK_INT >=11){
+                                            map=Image.rectifyAccelerated(bitmapBefore,getApplicationContext());
+                                        }else{
+                                            map=Image.rectify(bitmapBefore);
+                                        }
                                     }
 
                                 }
@@ -153,115 +166,5 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public Bitmap rectify(Bitmap bitmap){
-        RenderScript mRS;
-        Allocation allocIn;
-        Allocation allocOut;
-        ScriptC_rectify rectify;
-        Bitmap bmOut=bitmap.copy(Bitmap.Config.ARGB_8888,true);
 
-        if(Build.VERSION.SDK_INT >=11){
-            mRS = RenderScript.create(getApplicationContext());
-
-            allocIn = Allocation.createFromBitmap(mRS, bitmap,
-                    Allocation.MipmapControl.MIPMAP_NONE, Allocation.USAGE_SCRIPT);
-            allocOut = Allocation.createTyped(mRS, allocIn.getType());
-
-            rectify = new ScriptC_rectify(mRS, getResources(), com.project420.a.ecse420.R.raw.rectify);
-
-            rectify.set_gIn(allocIn);
-            rectify.set_gOut(allocOut);
-            rectify.forEach_root(allocIn,allocOut);
-            allocOut.copyTo(bmOut);
-        }
-        return bmOut;
-    }
-    public Bitmap pool(Bitmap bm){
-        Bitmap out = Bitmap.createBitmap(bm.getWidth()/2,bm.getHeight()/2, Bitmap.Config.ARGB_8888);
-
-        RenderScript mRs = RenderScript.create(getApplicationContext());
-
-        Allocation allocIn = Allocation.createFromBitmap(mRs,bm);
-        Allocation allocOut = Allocation.createFromBitmap(mRs,Bitmap.createBitmap(bm.getWidth(),bm.getHeight(), Bitmap.Config.ARGB_8888));
-        Allocation allocOutMod = Allocation.createFromBitmap(mRs,Bitmap.createBitmap(bm.getWidth()/2,bm.getHeight()/2, Bitmap.Config.ARGB_8888));
-
-        ScriptC_pool pool = new ScriptC_pool(mRs,getResources(),R.raw.pool);
-
-        pool.set_gin(allocIn);
-        pool.set_gout(allocOutMod);
-        pool.forEach_root(allocIn,allocOut);
-
-        allocOutMod.copyTo(out);
-
-        return out;
-    }
-    public Bitmap convolve(Bitmap bm){
-        RenderScript mRS;
-        ScriptC_convolve mScript;
-        Bitmap bmOut=Bitmap.createBitmap(bm.getWidth()-2,bm.getHeight()-2,Bitmap.Config.ARGB_8888);
-        mRS = RenderScript.create(getApplicationContext());
-        Allocation allocIn = Allocation.createFromBitmap(mRS,bm);
-        Allocation allocOut = Allocation.createFromBitmap(mRS,Bitmap.createBitmap(bm.getWidth(),bm.getHeight(), Bitmap.Config.ARGB_8888));
-        Allocation allocOutMod = Allocation.createFromBitmap(mRS,Bitmap.createBitmap(bm.getWidth()-2,bm.getHeight()-2, Bitmap.Config.ARGB_8888));
-
-        mScript = new ScriptC_convolve(mRS, getResources(), R.raw.convolve);
-        mScript.set_gIn(allocIn);
-        mScript.set_gOut(allocOutMod);
-        mScript.set_width(bm.getWidth());
-        mScript.set_height(bm.getHeight());
-
-
-        mScript.forEach_root(allocIn,allocOut);
-        allocOutMod.copyTo(bmOut);
-
-        return bmOut;
-    }
-    public void testEquality(){
-
-
-        if(bitmapBefore.getWidth()!=bitmapAfter.getWidth() || bitmapBefore.getHeight()!=bitmapAfter.getHeight()){
-            display.setText("DIFFERENT IMAGE!");
-            Log.d("DIMSIZE","dimensions don't match");
-        }
-        else {
-
-            new AsyncTask<Void,Void, Boolean>() {
-                double MSE=0;
-                @Override
-                protected void onPreExecute(){
-                    display.setText("Computing...");
-                }
-                @Override
-                protected Boolean doInBackground(Void... params) {
-                    int diff, sum = 0;
-                    for (int j = 0; j < bitmapBefore.getHeight(); j++) {
-                        for (int i = 0; i < bitmapBefore.getWidth(); i++) {
-                            diff = Math.abs(bitmapAfter.getPixel(i, j) - bitmapBefore.getPixel(i, j));
-                            sum += diff * diff;
-                        }
-                    }
-                    sum=sum<0?sum*-1:sum;
-                    MSE = Math.sqrt(sum) / (bitmapBefore.getWidth() * bitmapBefore.getHeight());
-                    if (MSE < 0.00001) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-                @Override
-                protected void onPostExecute(Boolean res){
-                    if(res){
-                        display.setText("SAME IMAGE!");
-                    }
-                    else{
-                        display.setText("DIFFERENT IMAGE!");
-                    }
-                    Toast.makeText(getApplicationContext(),"Done",Toast.LENGTH_SHORT).show();
-                    Log.d("MSE is", Double.toString(MSE));
-
-                }
-            }.execute();
-        }
-
-    }
 }
