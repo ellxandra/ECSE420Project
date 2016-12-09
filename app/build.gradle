@@ -9,12 +9,20 @@ android {
         minSdkVersion 9
         targetSdkVersion 23
         versionCode 1
-        versionName "1.0"
+        versionName
+        renderscriptTargetApi 18
+        renderscriptSupportModeEnabled true
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    sourceSets {
+        main {
+            renderscript.srcDirs = ['src/main/rs', 'src/main/java/com/project420/a/ecse420/renserscipt']
+            java.srcDirs = ['src/main/java', 'app/src/main/rs']
         }
     }
 }

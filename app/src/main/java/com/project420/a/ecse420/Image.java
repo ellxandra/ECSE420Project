@@ -1,10 +1,20 @@
 package com.project420.a.ecse420;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.os.Build;
+import android.renderscript.Allocation;
+import android.renderscript.RenderScript;
+import android.renderscript.Script;
+import android.renderscript.ScriptC;
+import android.renderscript.ScriptIntrinsicBlur;
+import android.renderscript.Type;
 import android.util.Log;
 
+import com.example.rs.*;
 import java.io.ByteArrayOutputStream;
 
 
@@ -109,7 +119,47 @@ public class Image{
         }
         return bm;
     }
+    /*
+    public Bitmap rectify2( Context ctx){
+         RenderScript mRS;
+         Allocation mInAllocation;
+         Allocation mOutAllocation;
+        ScriptC_rectify mScript;
+        Bitmap bm=getImage(array).copy(Bitmap.Config.ARGB_8888,true);
+        Bitmap bmOut=getImage(array).copy(Bitmap.Config.ARGB_8888,true);
+        int width=bm.getWidth();
+        int height=bm.getHeight();
+        int R,G,B;
+        for (int i=0; i<height;i++){
+            for (int j=0 ; j<width;j++){
+                R=Color.red(bm.getPixel(j,i));
+                B=Color.blue(bm.getPixel(j,i));
+                G=Color.green(bm.getPixel(j,i));
+                R=R<127?127:R;
+                G=G<127?127:G;
+                B=B<127?127:B;
+                bm.setPixel(j,i,Color.argb(255,R,G,B));
+            }
+        }
+        if(Build.VERSION.SDK_INT >=11){
+            mRS = RenderScript.create(ctx);
 
+            mInAllocation = Allocation.createFromBitmap(mRS, bm,
+                    Allocation.MipmapControl.MIPMAP_NONE, Allocation.USAGE_SCRIPT);
+            mOutAllocation = Allocation.createTyped(mRS, mInAllocation.getType());
+
+            mScript = new ScriptC_rectify(mRS, getResources(), R.raw.sepia);
+
+            mScript.set_gIn(mInAllocation);
+            mScript.set_gOut(mOutAllocation);
+            mScript.set_gScript(mScript);
+        }
+
+
+
+        return bm;
+    }
+*/
     public  byte[] getBytes(Bitmap bitmap) {
         if (bitmap!=null) {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();

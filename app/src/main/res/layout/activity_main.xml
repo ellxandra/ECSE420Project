@@ -17,11 +17,13 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <Button
+            <Spinner
                 android:id="@+id/load"
                 android:layout_width="200dp"
                 android:layout_height="50dp"
-                android:text="@string/display_content"/>
+                android:spinnerMode="dropdown"
+                android:entries="@array/load_options"
+                android:background="@android:drawable/btn_dropdown"/>
             <ImageView
                 android:layout_width="300dp"
                 android:layout_height="300dp"
