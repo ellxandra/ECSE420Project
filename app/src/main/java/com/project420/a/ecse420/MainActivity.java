@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(bitmapBefore!=null && bitmapAfter!=null) {
-                    compare();
+                    testEquality();
                 }
             }
         });
@@ -216,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
 
         return bmOut;
     }
-    public void compare(){
+    public void testEquality(){
 
 
         if(bitmapBefore.getWidth()!=bitmapAfter.getWidth() || bitmapBefore.getHeight()!=bitmapAfter.getHeight()){
