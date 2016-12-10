@@ -73,6 +73,9 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             protected Void doInBackground(Void... params) {
                                 try{
+                                    if(bitmapAfter!=null){
+                                        bitmapAfter.recycle();
+                                    }
                                     if (position==0){
                                         if(Build.VERSION.SDK_INT >=11){
                                             map=Image.poolAccelerated(bitmapBefore,getApplicationContext());
@@ -128,6 +131,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected Void doInBackground(Void... params) {
                 try{
+                    if(bitmapBefore!=null){
+                        bitmapBefore.recycle();
+                    }
                     URL url;
                     if(pos==0){ //initial
                         url = new URL("https://raw.githubusercontent.com/ellxandra/ECSE420Project/master/test.png");
